@@ -4,8 +4,6 @@ from api.serializers import *
 from api.models import *
 from django.db import transaction
 import json
-import copy
-import datetime as datetimemod
 from rest_framework.views import Response
 
 import logging
@@ -91,6 +89,9 @@ class products(generics.ListCreateAPIView):
     def insertOptions(self, options, attributeObject):
         if not attributeObject:
             raise TypeError("insertAttributes: attributeObject is not valid")
+
+        if len(options) == 0:
+            raise ValueError("Cannot have empty list of options for an attribute")
 
         optionSet = set()
 
