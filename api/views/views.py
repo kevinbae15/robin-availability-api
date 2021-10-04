@@ -75,6 +75,9 @@ class products(generics.ListCreateAPIView):
             if not 'options' in attribute:
                 raise ValueError("Options are required to assign to attribute")
 
+            if len(attribute['name']) > 255:
+                raise ValueError("Attribute name must be less than 255 characters")
+
             attributeObject = Attributes(name = attribute['name'], products = productObject)
             attributeObject.save()
             attributeSet.add(attribute['name'])
@@ -101,6 +104,9 @@ class products(generics.ListCreateAPIView):
 
             if option['name'] in optionSet:
                 raise ValueError("Cannot have duplicate options for a single attribute")
+
+            if len(option['name']) > 255:
+                raise ValueError("Option name must be less than 255 characters")
 
             optionObj = Options(name = option['name'], attributes = attributeObject)
             optionObj.save()
