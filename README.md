@@ -92,7 +92,7 @@ Request Payload:
 
 Success Response Example:
 
-> Note, duplicate products are allowed, BUT duplicate options for a single attribute or duplicate attributes are not allowed
+> Note, duplicate products are allowed, BUT duplicate options for a single attribute or duplicate attributes for a single product are not allowed
 
 ```
 {
