@@ -2,10 +2,10 @@
 > Simple api that works with multidimensional product variants
 
 ## Endpoints
-- GET  `\api\products`
-- POST `\api\products`
+- GET  `/api/products`
+- POST `/api/products`
 
-### GET `products`
+### GET `/api/products`
 
 Request Payload: N/A
 
@@ -53,7 +53,7 @@ Success Response Example:
 }
 ```
 
-### POST `products`
+### POST `/api/products`
 
 Request Payload:
 
