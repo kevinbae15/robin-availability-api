@@ -15,40 +15,40 @@ Success Response Example:
 {
 	"status": "success",
 	"data": [
-    {
-      "name": "Example Chips",
-      "attributes": [
-        {
-          "name": Flavor",
-          "options": [
-            {
-              "name": "Spicy",
-            },
-            {
-              "name": "Salty"
-            }
-          ],
-        },
-        {
-          "name": "Size",
-          "options": [
-            {
-              "name": "Small"
-            },
-            {
-              "name": "Medium"
-            },
-            {
-              "name": "Large"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "One Variant Snack",
-      "attributes": []
-    }
+		{
+			"name": "Example Chips",
+			"attributes": [
+				{
+					"name": Flavor",
+					"options": [
+						{
+							"name": "Spicy",
+						},
+						{
+							"name": "Salty"
+						}
+					],
+				},
+				{
+					"name": "Size",
+					"options": [
+						{
+							"name": "Small"
+						},
+						{
+							"name": "Medium"
+						},
+						{
+							"name": "Large"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "One Variant Snack",
+			"attributes": []
+		}
 	]
 }
 ```
@@ -59,34 +59,34 @@ Request Payload:
 
 ```
 {
-  "name": "Example Chips",
-  "attributes": [
-    {
-      "name": "Flavor",
-      "options": [
-        {
-          "name": "Spicy"
-        },
-        {
-          "name": "Salty"
-        }
-      ]
-    },
-    {
-      "name": "Size",
-      "options": [
-        {
-          "name": "Small"
-        },
-        {
-          "name": "Medium"
-        },
-        {
-          "name": "Large"
-        }
-      ]
-    }
-  ]
+	"name": "Example Chips",
+	"attributes": [
+		{
+			"name": "Flavor",
+			"options": [
+				{
+					"name": "Spicy"
+				},
+				{
+					"name": "Salty"
+				}
+			]
+		},
+		{
+			"name": "Size",
+			"options": [
+				{
+					"name": "Small"
+				},
+				{
+					"name": "Medium"
+				},
+				{
+					"name": "Large"
+				}
+			]
+		}
+	]
 }
 ```
 
@@ -96,8 +96,8 @@ Success Response Example:
 
 ```
 {
-  "status": "success",
-  "data": []
+	"status": "success",
+	"data": []
 }
 ```
 
@@ -105,6 +105,6 @@ Fail Response Example:
 
 ```
 {
-  "status": "error",
-  "errorMessage": "Name of product cannot be empty"
+	"status": "error",
+	"errorMessage": "Name of product cannot be empty"
 }
