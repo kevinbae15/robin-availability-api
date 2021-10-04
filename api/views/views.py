@@ -91,7 +91,7 @@ class products(generics.ListCreateAPIView):
     '''
     def insertOptions(self, options, attributeObject):
         if not attributeObject:
-            raise TypeError("insertAttributes: attributeObject is not valid")
+            raise TypeError("insertOptions: attributeObject is not valid")
 
         if len(options) == 0:
             raise ValueError("Cannot have empty list of options for an attribute")
