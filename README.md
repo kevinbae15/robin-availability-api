@@ -21,16 +21,26 @@ Success Response Example:
         {
           "name": Flavor",
           "options": [
-            "Spicy",
-            "Salty"
+            {
+              "name": "Spicy",
+            },
+            {
+              "name": "Salty"
+            }
           ],
         },
         {
           "name": "Size",
           "options": [
-            "Small",
-            "Medium", 
-            "Large"
+            {
+              "name": "Small"
+            },
+            {
+              "name": "Medium"
+            },
+            {
+              "name": "Large"
+            }
           ]
         }
       ]
@@ -49,21 +59,31 @@ Request Payload:
 
 ```
 {
-  "name": "Test Chips",
+  "name": "Example Chips",
   "attributes": [
     {
       "name": "Flavor",
       "options": [
-        "Spicy",
-        "Salty"
+        {
+          "name": "Spicy"
+        },
+        {
+          "name": "Salty"
+        }
       ]
     },
     {
       "name": "Size",
       "options": [
-        "Small",
-        "Medium",
-        "Large"
+        {
+          "name": "Small"
+        },
+        {
+          "name": "Medium"
+        },
+        {
+          "name": "Large"
+        }
       ]
     }
   ]
@@ -71,6 +91,8 @@ Request Payload:
 ```
 
 Success Response Example:
+
+> Note, duplicate products are allowed, BUT duplicate options for a single attribute or duplicate attributes are not allowed
 
 ```
 {
