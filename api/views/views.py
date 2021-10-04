@@ -30,7 +30,7 @@ class products(generics.ListCreateAPIView):
         except ValueError as error:
             return Response({"status": "failure", "errorMessage": str(error)}, status=400)
         except Exception as error:
-            logger.info(repr(error));
+            logger.info(repr(error))
             return Response({"status": "error", "errorMessage": "Something went wrong"}, status=500)
 
         return Response({"status": "success", "data": []}, status=200)
