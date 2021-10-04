@@ -2,8 +2,8 @@
 > Simple api that works with multidimensional product variants
 
 ## Endpoints
-- GET  `products`
-- POST `products`
+- GET  `\api\products`
+- POST `\api\products`
 
 ### GET `products`
 
