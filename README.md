@@ -55,7 +55,7 @@ Success Response Example:
 
 ### POST `/api/products`
 
-> Note, duplicate products are allowed, BUT duplicate options for a single attribute or duplicate attributes for a single product are not allowed
+> Note, duplicate products are allowed, BUT duplicate options for a single attribute or duplicate attributes for a single product are not allowed. Also, if an attribute is provided, a non-empty list of options for the attribute must be provided as well.
 
 Request Payload:
 
