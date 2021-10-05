@@ -1,6 +1,44 @@
 # multi-dimen-product
 > Simple api that works with multidimensional product variants
 
+
+## Setup
+
+### Startup DB
+
+> Note this is for Mac. `brew install postgres` if not already installed and start the service: `brew services start postgresql
+`
+
+```
+psql postgres
+CREATE DATABASE mabledb;
+CREATE USER mableadmin WITH PASSWORD 'mableadmin';
+GRANT ALL PRIVILEGES ON DATABASE "mabledb" to mableadmin;
+\q
+```
+
+### Setup virtual environment
+
+```
+python3 -m venv dev
+. dev/bin/activate
+pip3 install -r requirements.txt
+```
+
+### Setup migrations
+
+```
+python3 manage.py flush
+python3 manage.py makemigrations api
+python3 manage.py migrate
+```
+
+### Start
+
+```
+python3 manage.py runserver <port_number>
+```
+
 ## Endpoints
 - GET  `/api/products`
 - POST `/api/products`
@@ -108,3 +146,4 @@ Fail Response Example:
 	"status": "error",
 	"errorMessage": "Name of product cannot be empty"
 }
+```
