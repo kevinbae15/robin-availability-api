@@ -34,8 +34,9 @@ class products(generics.ListCreateAPIView):
 
     '''
         Params: 
-            - product with valid "name"
-            - product with list of attributes is optional
+            - product 
+                - with valid "name"
+                - with list of attributes is optional
     '''
     def insertProduct(self, product):
         if not 'name' in product or not product['name']:
@@ -54,8 +55,9 @@ class products(generics.ListCreateAPIView):
 
     '''
         Params: 
-            - attributes with valid "name"
-            - attributes with list of options
+            - attributes 
+                - valid "name"
+                - with list of options
             - valid Products object
     '''
     def insertAttributes(self, attributes, productObject):
