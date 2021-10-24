@@ -6,9 +6,6 @@ env/
 dev/
 apienv/
 
-# Ignore migrations
-api/migrations
-
 # Linux backups
 *~
 
