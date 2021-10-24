@@ -17,7 +17,12 @@ from django.urls import path
 from django.contrib import admin
 
 from api.views.views import *
+from api.views.v1availability import availability as v1availability
+from api.views.v2availability import availability as v2availability
+from api.views.v3availability import availability as v3availability
 
 urlpatterns = [
-    path("products", products.as_view(), name="products"),
+    path("v1/availability", v1availability.as_view(), name="v1availability"),
+    path("v2/availability", v2availability.as_view(), name="v2availability"),
+    path("v3/availability", v3availability.as_view(), name="v3availability"),
 ]

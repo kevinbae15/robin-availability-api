@@ -1,114 +1,140 @@
 from rest_framework import generics
 from rest_framework import status
-from api.serializers import *
-from api.models import *
-from django.db import transaction
 import json
+from datetime import datetime
 from rest_framework.views import Response
-
+from datetime import datetime as dt
+import dateutil.parser as dp
 import logging
 
 logger = logging.getLogger("ten.server")
 
-class products(generics.ListCreateAPIView):
-    serializer_class = Products
 
-    def get(self, request, *arg, **kwargs):
-        querySet = Products.objects.all()
-        serializedData = ProductsSerializer(querySet, many=True).data
-    
-        return Response({"status": "success", "data": serializedData}, status=200)
+# fixes to data
+# - normalize from -> start, to -> end
+# - add comma
+# - normalize timestamp timezones +0000 -> +00:00
+# - add user_id 4 for day 2, work start and end time for user_id 3 made no sense
 
-    def post(self, request, *args, **kwargs):
-        dataObject = json.loads(request.body.decode("utf-8"))
+class availabilityBase(generics.ListCreateAPIView):
 
-        try:
-            with transaction.atomic():
-                productObject = self.insertProduct(dataObject)
-        except ValueError as error:
-            return Response({"status": "failure", "errorMessage": str(error)}, status=400)
-        except Exception as error:
-            return Response({"status": "error", "errorMessage": "Something went wrong"}, status=500)
+    # assumptions: 
+    # there is no order to the data
+    # one user object represents 1 day
+    # there will always be one event in a single day (otherwise we would not know what day the work hours pertain to)
+    def getUserData(self):
+        dataFile = open('user_data.json', 'r')
+        data = json.load(dataFile)
 
-        return Response({"status": "success", "data": []}, status=200)
+        newUserData = {}
 
-    '''
-        Params: 
-            - product 
-                - with valid "name"
-                - with list of attributes is optional
-    '''
-    def insertProduct(self, product):
-        if not 'name' in product or not product['name']:
-            raise ValueError("Product name cannot be empty")
+        for chunk in data:
+            userId = chunk['user_id']
+            del chunk['user_id']
+            for event in chunk['events']:
+                event['start'] = dp.isoparse(event['start'])
+                event['end'] = dp.isoparse(event['end'])
+                          
 
-        if len(product['name']) > 255:
-            raise ValueError("Product name must be less than 255 characters")
+            if userId in newUserData:
+                newUserData[userId].append(chunk)
+            else:
+                newUserData[userId] = [chunk]
 
-        productObject = Products(name = product['name'])
-        productObject.save()
+        return newUserData
 
-        if 'attributes' in product:
-            self.insertAttributes(product['attributes'], productObject)
 
-        return productObject
+    # Todo: handle parameter checks
+    def checkParameters(self, request):
+        parametersObject = json.loads(request.body.decode("utf-8"))
+        parametersObject['timeRange']['start'] = dp.isoparse(parametersObject['timeRange']['start'])
+        parametersObject['timeRange']['end'] = dp.isoparse(parametersObject['timeRange']['end'])
 
-    '''
-        Params: 
-            - attributes 
-                - valid "name"
-                - with list of options
-            - valid Products object
-    '''
-    def insertAttributes(self, attributes, productObject):
-        if not productObject:
-            raise TypeError("insertAttributes: productObject is not valid")
+        return True, parametersObject, None
 
-        attributeSet = set()
 
-        for attribute in attributes:
-            if not 'name' in attribute or not attribute['name']:
-                raise ValueError("Attribute name cannot be empty")
+    def findIntersections(self, availabilityList):
+        if len(availabilityList) < 2:
+            return []
 
-            if attribute['name'] in attributeSet:
-                raise ValueError("Cannot have duplicate attributes for a single product")
+        currentAvailability = availabilityList[0]
+        currentAvailabilityIndex = 1
 
-            if not 'options' in attribute:
-                raise ValueError("Options are required to assign to attribute")
+        while currentAvailabilityIndex < len(availabilityList):
+            currentAvailability = self.findIntersectionOfTwoAvailabilities(currentAvailability, availabilityList[currentAvailabilityIndex])
+            currentAvailabilityIndex += 1
 
-            if len(attribute['name']) > 255:
-                raise ValueError("Attribute name must be less than 255 characters")
+        return currentAvailability
 
-            attributeObject = Attributes(name = attribute['name'], products = productObject)
-            attributeObject.save()
-            attributeSet.add(attribute['name'])
+    def findIntersectionOfTwoAvailabilities(self, availability1, availability2):
+        intersections = []
+        a1Index = 0
+        a2Index = 0
+        while a1Index < len(availability1) and a2Index < len(availability2):
+            a1 = availability1[a1Index]
+            a2 = availability2[a2Index]
 
-            self.insertOptions(attribute['options'], attributeObject)
+            # grab the earlier availability and swap objects if needed
+            if a1['start'] > a2['start']:
+                availability1, availability2 = availability2, availability1
+                a1, a2 = a2, a1
+                a1Index, a2Index = a2Index, a1Index
 
-    '''
-        Params: 
-            - options with valid "name"
-            - valid Attributes object
-    '''
-    def insertOptions(self, options, attributeObject):
-        if not attributeObject:
-            raise TypeError("insertOptions: attributeObject is not valid")
+            if a1['end'] > a2['start']:
+                if a1['end'] >= a2['end']:
+                    intersections.append({"start": a2['start'], "end": a2['end']})
+                    a2Index += 1
+                else:
+                    intersections.append({"start": a2['start'], "end": a1['end']})
+                    a1Index += 1
+            else:
+                a1Index += 1
 
-        if len(options) == 0:
-            raise ValueError("Cannot have empty list of options for an attribute")
 
-        optionSet = set()
+        return intersections
 
-        for option in options:
-            if not "name" in option or not option['name']:
-                raise ValueError("Option name cannot be empty")
+    def sortEvents(self, data):
+        data.sort(key = lambda x: x['start'])
+        return data
 
-            if option['name'] in optionSet:
-                raise ValueError("Cannot have duplicate options for a single attribute")
+    def findAvailability(self, userEvents, start, end):
+        userEvents = self.sortEvents(userEvents)
+        availability = []
+        eventIndex = 0
 
-            if len(option['name']) > 255:
-                raise ValueError("Option name must be less than 255 characters")
+        if len(userEvents) == 0:
+            return {"start": start, "end": end}
 
-            optionObj = Options(name = option['name'], attributes = attributeObject)
-            optionObj.save()
-            optionSet.add(option['name'])
+        while eventIndex < len(userEvents):
+            currEvent = userEvents[eventIndex]
+            eventIndex += 1
+
+            if start >= end:
+                break
+
+            # if start time is in between event
+            if start > currEvent['start']:
+
+                #if start is before end of event, this event can be ignored
+                if start > currEvent['end']:
+                    continue
+                else:
+                    start = currEvent['end']
+
+            elif start == currEvent['start']:
+                start = currEvent['end']
+                   
+            # if start time is before a start of a meeting time, there is an availability 
+            else:
+                if end > currEvent['start']:
+                    availability.append({"start": start, "end": currEvent['start']})
+                    start = currEvent['end'] 
+                else:
+                    availability.append({"start": start, "end": end})
+                    start = currEvent['end']
+                    break
+
+        if start < end:
+            availability.append({"start": start, "end": end}) 
+
+        return availability
