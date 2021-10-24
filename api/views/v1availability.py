@@ -9,7 +9,13 @@ logger = logging.getLogger("ten.server")
 
 class availability(availabilityBase):
     def get(self, request, *arg, **kwargs):    
-        _, parametersObject, _ = self.checkParameters(request)
+        try:
+            parametersObject = self.checkParameters(request)
+        except ValueError as e:
+            return Response({"status": "fail", "errorMessage": str(e)}, status=400)
+        except Exception as e:
+            return Response({"status": "error", "errorMessage": "Something went wrong"}, status=500)
+
         userData = self.getUserData()
 
         timeRangeStart = parametersObject['timeRange']['start']

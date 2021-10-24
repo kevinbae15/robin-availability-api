@@ -13,7 +13,13 @@ logger = logging.getLogger("ten.server")
 
 class availability(v2availability):
     def get(self, request, *arg, **kwargs):    
-        _, parametersObject, _ = self.checkParameters(request)
+        try:
+            parametersObject = self.checkParameters(request)
+        except ValueError as e:
+            return Response({"status": "fail", "errorMessage": str(e)}, status=400)
+        except Exception as e:
+            return Response({"status": "error", "errorMessage": "Something went wrong"}, status=500)
+            
         userData = self.getUserData()
 
         timeRangeStart = parametersObject['timeRange']['start']
@@ -66,6 +72,7 @@ class availability(v2availability):
             "userIds": [currUserId]
         }
 
+        # UNFINISHED
         # Idea is to utilize one min heap sorted by start
         # All availabilities are inserted into start_heap
         # Grab the first item (A) from start_heap as basis

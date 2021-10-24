@@ -44,13 +44,26 @@ class availabilityBase(generics.ListCreateAPIView):
         return newUserData
 
 
-    # Todo: handle parameter checks
+    # Nice to haves: more robust parameter checks and transparent error handling
     def checkParameters(self, request):
         parametersObject = json.loads(request.body.decode("utf-8"))
+
+        if 'users' not in parametersObject:
+            raise ValueError("users array must be defined")
+
+        if 'timeRange' not in parametersObject:
+            raise ValueError("timeRange must be defined")
+
+        if 'start' not in parametersObject['timeRange']:
+            raise ValueError("timeRange start must be defined")
+
+        if 'end' not in parametersObject['timeRange']:
+            raise ValueError("timeRange end must be defined")
+
         parametersObject['timeRange']['start'] = dp.isoparse(parametersObject['timeRange']['start'])
         parametersObject['timeRange']['end'] = dp.isoparse(parametersObject['timeRange']['end'])
 
-        return True, parametersObject, None
+        return parametersObject
 
 
     def findIntersections(self, availabilityList):
