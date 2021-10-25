@@ -73,18 +73,7 @@ class availability(v2availability):
         }
 
         # UNFINISHED
-        # Idea is to utilize one min heap sorted by start
-        # All availabilities are inserted into start_heap
-        # Grab the first item (A) from start_heap as basis
-        # Grab the next item (B) from start_heap to compare
-        # There are two cases:
-        #   1) If A's end time is less then or equal to B's start time, we can move on from A. Use B as basis from now on
-        #   2) Otherwise, there is overlap. Keep track of these time ranges in an object. Now, we would have to run a recursive function to check if there 
-        #      are additional items that start before B's end time. We would setup our function so that if we find another item, we add the current 
-        #      state of the tracking object to our result and then continue building it by adding the new item. Recursve again.
-        # Some additional logic is if item B or any subsequent items are encapsulated by item A's range, we would remove them from the heap as they no longer need processing
-        # And we would also need to check for duplicates in the result 
-
+        # See readme for thoughts on how to approach this problem
 
         return res
 
